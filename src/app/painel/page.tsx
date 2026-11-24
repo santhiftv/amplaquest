@@ -3,13 +3,15 @@ import { createClient } from '@/lib/supabase/server';
 import SignOutButton from '@/components/SignOutButton';
 import Eagle from '@/components/Eagle';
 import Logo from '@/components/Logo';
+import StudentApp from '@/components/app/StudentApp';
+import type { AvatarCfg } from '@/components/app/Avatar3D';
 
 const ROLE_LABEL: Record<string, string> = {
   admin: 'Direção',
   teacher: 'Professor(a)',
-  student: 'Aluno(a)',
   parent: 'Responsável',
 };
+const DEFAULT_AVATAR: AvatarCfg = { skin: 0, hairStyle: 0, hairColor: 0, top: 0, bot: 0, cap: false, beard: false };
 
 export default async function Painel() {
   const supabase = createClient();
@@ -20,10 +22,33 @@ export default async function Painel() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, nickname, role, class_id')
+    .select('id, full_name, nickname, role, class_id, avatar, classes(name)')
     .eq('auth_user_id', user.id)
     .single();
 
+  if (!profile) {
+    return (
+      <main className="wrap" style={{ padding: 40 }}>
+        <div className="card">Perfil não encontrado para esta conta. Fale com a secretaria do colégio.</div>
+      </main>
+    );
+  }
+
+  if (profile.role === 'student') {
+    const cls = Array.isArray(profile.classes) ? profile.classes[0] : profile.classes;
+    return (
+      <StudentApp
+        profileId={profile.id}
+        fullName={profile.full_name}
+        nickname={profile.nickname}
+        classId={profile.class_id as string}
+        className={(cls as any)?.name ?? ''}
+        avatar={{ ...DEFAULT_AVATAR, ...((profile.avatar as any) || {}) }}
+      />
+    );
+  }
+
+  // professor / responsável / direção — áreas completas na próxima etapa
   return (
     <main style={{ minHeight: '100vh' }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 22px', borderBottom: '1px solid var(--line)' }}>
@@ -34,14 +59,12 @@ export default async function Painel() {
       <div className="wrap" style={{ padding: '40px 22px', maxWidth: 720 }}>
         <div className="card center" style={{ padding: 32 }}>
           <div style={{ display: 'flex', justifyContent: 'center' }}><Eagle size={140} /></div>
-          <span className="pill" style={{ marginTop: 10 }}>{ROLE_LABEL[profile?.role ?? ''] ?? 'Conta'}</span>
-          <h2 style={{ margin: '12px 0 4px' }}>
-            Olá, {profile?.nickname || profile?.full_name || 'estudante'}! 🦅
-          </h2>
+          <span className="pill" style={{ marginTop: 10 }}>{ROLE_LABEL[profile.role] ?? 'Conta'}</span>
+          <h2 style={{ margin: '12px 0 4px' }}>Olá, {profile.nickname || profile.full_name}! 🦅</h2>
           <p className="muted">
-            Seu login está funcionando e conectado ao banco com segurança. As áreas completas
-            (trilha, quiz com a Mantovani, liga das turmas, área do professor e dos pais) entram na
-            próxima etapa da construção.
+            Seu acesso de {ROLE_LABEL[profile.role]?.toLowerCase()} está ativo e seguro. A área completa
+            ({profile.role === 'teacher' ? 'criar conteúdos e gerar tarefas' : profile.role === 'parent' ? 'acompanhar notas e progresso' : 'gestão da escola'})
+            entra na próxima etapa da construção.
           </p>
         </div>
       </div>
