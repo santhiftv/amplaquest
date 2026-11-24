@@ -29,6 +29,27 @@ function Shape({ i }: { i: number }) {
   return <svg width="22" height="22" viewBox="0 0 22 22" className="shape">{p[i]}</svg>;
 }
 
+const THEME: Record<string, string[]> = {
+  ing: ['🌎', '💬', '🔤', '✈️', '📣', '🗣️'],
+  mat: ['➗', '✖️', '📐', '🔢', '📊', '➕'],
+  por: ['📖', '✏️', '🔤', '📝', '🔠', '📚'],
+  geo: ['🗺️', '⛰️', '🧭', '🌍', '🏞️', '📍'],
+  cie: ['🔬', '🪐', '🧪', '🌱', '⚛️', '💧'],
+  edf: ['⚽', '🏃', '🏅', '🥇', '🤸', '🎽'],
+};
+const MAP_POS = [[6, 7], [80, 5], [42, 13], [14, 28], [70, 24], [88, 42], [7, 52], [48, 48], [78, 62], [20, 74], [58, 80], [34, 90]];
+function MapBg({ code, color }: { code: string; color: string }) {
+  const icons = THEME[code] || ['⭐'];
+  return (
+    <div className="trilha-map" key={code}>
+      <div className="tint" style={{ background: `radial-gradient(60% 45% at 50% 8%, ${color}3a, transparent), radial-gradient(55% 40% at 82% 72%, ${color}2e, transparent)` }} />
+      {MAP_POS.map(([x, y], i) => (
+        <span key={i} className="ic" style={{ left: x + '%', top: y + '%', fontSize: 22 + (i % 3) * 13 + 'px', animationDelay: i * 0.4 + 's' }}>{icons[i % icons.length]}</span>
+      ))}
+    </div>
+  );
+}
+
 const PRAISE = ['Boa!', 'Mandou bem!', 'Acertou em cheio!', 'Perfeito!', 'Voando alto!'];
 
 export default function StudentApp(p: Props) {
@@ -46,10 +67,11 @@ export default function StudentApp(p: Props) {
   const [blog, setBlog] = useState<{ tag: string; title: string; body: string }[]>([]);
   const [avatar, setAvatar] = useState<AvatarCfg>(p.avatar);
   const [nick, setNick] = useState(p.nickname ?? '');
+  const [perf, setPerf] = useState<Record<string, { c: number; t: number }>>({});
   const [quiz, setQuiz] = useState<any>(null);
 
   const load = useCallback(async () => {
-    const [st, subj, un, up, cst, cls, cp, rl, bd, sb, bl] = await Promise.all([
+    const [st, subj, un, up, cst, cls, cp, rl, bd, sb, bl, at] = await Promise.all([
       supabase.from('student_stats').select('xp,gems,streak').eq('student_id', p.profileId).maybeSingle(),
       supabase.from('subjects').select('id,code,name,icon,color'),
       supabase.from('units').select('id,title,order_index,subject_id').eq('class_id', p.classId).eq('bimester', 2).order('order_index'),
@@ -61,6 +83,7 @@ export default function StudentApp(p: Props) {
       supabase.from('badges').select('id,code,name,description,icon,color'),
       supabase.from('student_badges').select('badge_id').eq('student_id', p.profileId),
       supabase.from('blog_posts').select('tag,title,body').order('published_at', { ascending: false }),
+      supabase.from('attempts').select('correct_count,total,units(subject_id)').eq('student_id', p.profileId),
     ]);
     if (st.data) setStats(st.data as any);
     const order = ['ing', 'mat', 'por', 'geo', 'cie', 'edf'];
@@ -89,6 +112,14 @@ export default function StudentApp(p: Props) {
     const got = new Set((sb.data ?? []).map((r: any) => r.badge_id));
     setBadges((bd.data ?? []).map((b: any) => ({ ...b, got: got.has(b.id) })));
     setBlog((bl.data ?? []) as any);
+    const pf: Record<string, { c: number; t: number }> = {};
+    (at.data ?? []).forEach((a: any) => {
+      const sid = Array.isArray(a.units) ? a.units[0]?.subject_id : a.units?.subject_id;
+      if (!sid) return;
+      if (!pf[sid]) pf[sid] = { c: 0, t: 0 };
+      pf[sid].c += a.correct_count; pf[sid].t += a.total;
+    });
+    setPerf(pf);
   }, [supabase, p.profileId, p.classId, p.fullName, p.nickname]);
 
   useEffect(() => { load(); }, [load]);
@@ -182,7 +213,9 @@ export default function StudentApp(p: Props) {
                 <div style={{ textAlign: 'right' }}><small>com {teachers[curSubject] || '—'}</small><br /><b>{doneCount}/{curUnits.length}</b></div>
               </div>
             )}
-            <div className="path">
+            <div className="trilha-wrap">
+              {curSubjObj && <MapBg code={curSubjObj.code} color={curSubjObj.color} />}
+              <div className="path">
               {curUnits.map((u, i) => (
                 <div key={u.id} className="nodewrap">
                   <button className={'node ' + u.status + ' n' + (i % 6)}
@@ -195,6 +228,7 @@ export default function StudentApp(p: Props) {
                   <div className="nlabel">{u.title}</div>
                 </div>
               ))}
+              </div>
             </div>
           </>
         )}
@@ -218,16 +252,43 @@ export default function StudentApp(p: Props) {
           </>
         )}
 
-        {tab === 'profs' && (
-          <div className="arc-card"><h3>🤝 Relação com os professores</h3>
-            <p className="muted small" style={{ margin: '4px 0 16px' }}>Construída por tarefas, perguntas, conteúdo avançado e acertos.</p>
-            <div className="relgrid">{subjects.map((s) => { const v = rel[s.id] ?? 0; return (
-              <div className="rel" key={s.id}><div className="ring" style={{ background: `conic-gradient(${s.color} ${v}%, var(--line) 0)` }}><i>{s.icon}</i></div>
-                <div><b>{teachers[s.id] || s.name}</b><small className="muted">{s.name} · {v}%</small></div>
-                <div className="lvl" style={{ color: s.color }}>{v >= 80 ? 'A' : v >= 60 ? 'B' : v >= 40 ? 'C' : v >= 20 ? 'D' : 'E'}</div></div>); })}
-            </div>
-          </div>
-        )}
+        {tab === 'profs' && (() => {
+          const rows = subjects.map((s) => { const pf = perf[s.id]; const acc = pf && pf.t > 0 ? Math.round((pf.c / pf.t) * 100) : null; const score = rel[s.id] ?? 0; return { s, acc, score, metric: acc ?? score }; });
+          const sorted = [...rows].sort((a, b) => b.metric - a.metric);
+          const best = sorted[0]; const worst = sorted[sorted.length - 1];
+          const tip = (m: number) => m >= 75 ? 'Excelente! Mantenha o ritmo e ajude os colegas.' : m >= 50 ? 'Indo bem — avance mais um conteúdo nesta semana.' : 'Precisa reforçar: refaça as tarefas e tire dúvidas com o professor.';
+          return (
+            <>
+              <div className="arc-card"><h3>🤝 Relação com os professores</h3>
+                <p className="muted small" style={{ margin: '4px 0 0' }}>Construída por tarefas, perguntas, conteúdo avançado e acertos — veja onde você vai melhor e o que reforçar.</p>
+              </div>
+              {best && (
+                <div className="grid-two">
+                  <div className="arc-card" style={{ borderColor: '#bbf7d0' }}>
+                    <div className="tag-top" style={{ color: 'var(--verde)' }}>🌟 Melhor desempenho</div>
+                    <b style={{ fontFamily: 'var(--display)', fontSize: 16 }}>{best.s.icon} {best.s.name}</b>
+                    <p className="muted small" style={{ marginTop: 4 }}>{best.acc != null ? `${best.acc}% de acertos` : `${best.score}% de vínculo`} com {teachers[best.s.id]}. Você está mandando bem aqui!</p>
+                  </div>
+                  <div className="arc-card" style={{ borderColor: '#fecaca' }}>
+                    <div className="tag-top" style={{ color: '#dc2626' }}>🎯 Foco de melhoria</div>
+                    <b style={{ fontFamily: 'var(--display)', fontSize: 16 }}>{worst.s.icon} {worst.s.name}</b>
+                    <p className="muted small" style={{ marginTop: 4 }}>{worst.acc != null ? `${worst.acc}% de acertos` : `${worst.score}% de vínculo`}. {tip(worst.metric)}</p>
+                  </div>
+                </div>
+              )}
+              <div className="arc-card"><h3 style={{ marginBottom: 12 }}>Por matéria</h3>
+                <div className="relgrid">{rows.map(({ s, acc, score, metric }) => (
+                  <div className="rel" key={s.id} style={{ flexWrap: 'wrap' }}>
+                    <div className="ring" style={{ background: `conic-gradient(${s.color} ${score}%, var(--line) 0)` }}><i>{s.icon}</i></div>
+                    <div style={{ flex: 1, minWidth: 0 }}><b>{teachers[s.id] || s.name}</b><small className="muted">{s.name} · {acc != null ? `${acc}% de acertos` : `${score}% de vínculo`}</small></div>
+                    <div className="lvl" style={{ color: s.color }}>{metric >= 80 ? 'A' : metric >= 60 ? 'B' : metric >= 40 ? 'C' : metric >= 20 ? 'D' : 'E'}</div>
+                    <div className="tip-line">💡 {tip(metric)}</div>
+                  </div>))}
+                </div>
+              </div>
+            </>
+          );
+        })()}
 
         {tab === 'emblemas' && (
           <div className="arc-card"><h3>🏅 Seus emblemas</h3>
@@ -308,7 +369,13 @@ export default function StudentApp(p: Props) {
         </div>
       )}
 
-      <style>{`.shape{flex:0 0 auto}`}</style>
+      <style>{`
+        .shape{flex:0 0 auto}
+        .grid-two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+        @media(max-width:560px){.grid-two{grid-template-columns:1fr}}
+        .tag-top{font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px;font-family:var(--display)}
+        .tip-line{flex-basis:100%;background:var(--roxo-bg);color:var(--roxo);border-radius:10px;padding:8px 10px;font-size:12px;font-weight:600;margin-top:8px}
+      `}</style>
     </div>
   );
 }

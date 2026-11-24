@@ -71,9 +71,11 @@ img,svg{display:block;max-width:100%}
 /* ====================================================== */
 /* ARCADE (portal do aluno/professor/pais) — Kahoot+Duolingo */
 /* ====================================================== */
-.arc{min-height:100vh;background:var(--paper);padding-bottom:86px}
-.arc-top{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:10px 16px}
-.arc-brand{display:flex;align-items:center;gap:9px;font-family:var(--display);font-weight:700}
+.arc{min-height:100vh;background:linear-gradient(175deg,#3a1e6e,#241046 55%,#160a30);padding-bottom:86px}
+.arc-top{position:sticky;top:0;z-index:30;background:rgba(22,10,48,.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:12px;padding:10px 16px}
+.arc-brand{display:flex;align-items:center;gap:9px;font-family:var(--display);font-weight:700;color:#fff}
+.arc-card{color:var(--ink)}
+.subtab{color:var(--ink)}
 .arc-brand img{width:30px;height:30px;border-radius:7px}
 .arc-stats{margin-left:auto;display:flex;align-items:center;gap:10px}
 .hud{display:inline-flex;align-items:center;gap:5px;font-weight:800;font-size:14px;padding:5px 11px;border-radius:999px;font-family:var(--display)}
@@ -110,7 +112,7 @@ img,svg{display:block;max-width:100%}
 .node.done{background:var(--amarelo);box-shadow:0 7px 0 #b9770a}
 .node .ck{position:absolute;bottom:-3px;right:-3px;background:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--verde);border:2px solid var(--verde-2)}
 .node .go{position:absolute;top:-32px;left:50%;transform:translateX(-50%);background:#fff;color:var(--roxo);font-size:10px;font-weight:900;padding:4px 9px;border-radius:8px;box-shadow:var(--shadow-sm);white-space:nowrap;animation:bob 1s ease-in-out infinite;font-family:var(--display)}
-.nlabel{font-weight:700;font-size:12px;color:#8b84a0;margin:7px 0 16px}
+.nlabel{font-weight:700;font-size:12px;color:rgba(255,255,255,.72);margin:7px 0 16px}
 .n0{margin-left:0}.n1{margin-left:110px}.n2{margin-left:55px}.n3{margin-left:-55px}.n4{margin-left:-110px}.n5{margin-left:-55px}
 
 /* liga / ranking */
@@ -153,10 +155,18 @@ img,svg{display:block;max-width:100%}
 .chipc.on{border-color:var(--roxo-2);background:var(--roxo-bg);color:var(--roxo)}
 
 /* bottom nav */
-.bnav{position:fixed;bottom:0;left:0;right:0;z-index:30;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:6px 4px}
-.nav{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px;border-radius:12px;color:var(--ink-soft);font-weight:700;font-size:10px;font-family:var(--display)}
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:30;background:#160a30;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-around;padding:6px 4px}
+.nav{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px;border-radius:12px;color:rgba(255,255,255,.55);font-weight:700;font-size:10px;font-family:var(--display)}
 .nav .ic{font-size:21px}
-.nav.on{color:var(--roxo);background:var(--roxo-bg)}
+.nav.on{color:#fff;background:rgba(255,255,255,.12)}
+
+/* trilha: mapa desenhado de fundo */
+.trilha-wrap{position:relative;min-height:60vh}
+.trilha-map{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.trilha-map .tint{position:absolute;inset:0}
+.trilha-map .ic{position:absolute;opacity:.16;animation:floaty 6s ease-in-out infinite}
+.trilha-wrap .path{position:relative;z-index:1}
+.subtabs,.ubanner{position:relative;z-index:1}
 
 /* ======= QUIZ Kahoot ======= */
 .quiz{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;background:#120a2a;color:#fff}
