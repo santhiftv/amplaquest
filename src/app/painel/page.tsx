@@ -12,7 +12,7 @@ const ROLE_LABEL: Record<string, string> = {
   teacher: 'Professor(a)',
   parent: 'Responsável',
 };
-const DEFAULT_AVATAR: AvatarCfg = { skin: 0, hairStyle: 0, hairColor: 0, top: 0, bot: 0, cap: false, beard: false };
+const DEFAULT_AVATAR: AvatarCfg = { gender: 'boy', skin: 1, hairColor: 0, top: 0, bot: 0, cap: false, glasses: false };
 
 export default async function Painel() {
   const supabase = createClient();

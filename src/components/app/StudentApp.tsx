@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { createClient } from '@/lib/supabase/client';
 import SignOutButton from '@/components/SignOutButton';
-import { AvatarCfg, SKINS, HAIRCOLORS, HAIRSTYLES, TOPS, BOTS } from './Avatar3D';
+import { AvatarCfg, SKINS, HAIRCOLORS, TOPS, BOTS, GENDERS } from './Avatar3D';
 
 const Avatar3D = dynamic(() => import('./Avatar3D'), { ssr: false });
 
@@ -305,13 +305,13 @@ export default function StudentApp(p: Props) {
             <div className="center" style={{ fontFamily: 'var(--display)', fontSize: 20, marginTop: 8 }}>{nick ? `"${nick}"` : '🎓'}<div className="muted small" style={{ fontFamily: 'var(--font)' }}>{p.fullName} · {p.className}</div></div>
             <label className="czl">Apelido</label>
             <input className="inp" value={nick} onChange={(e) => saveNick(e.target.value)} placeholder="Apelido" />
+            <Row label="Personagem">{GENDERS.map((g) => <Chip key={g.id} on={avatar.gender === g.id} onClick={() => updateAvatar({ ...avatar, gender: g.id })}>{g.n}</Chip>)}</Row>
             <Row label="Tom de pele">{SKINS.map((c, i) => <button key={i} className={'sw' + (avatar.skin === i ? ' on' : '')} style={{ background: c }} onClick={() => updateAvatar({ ...avatar, skin: i })} />)}</Row>
-            <Row label="Cabelo">{HAIRSTYLES.map((n, i) => <Chip key={i} on={avatar.hairStyle === i} onClick={() => updateAvatar({ ...avatar, hairStyle: i })}>{n}</Chip>)}</Row>
             <Row label="Cor do cabelo">{HAIRCOLORS.map((c, i) => <button key={i} className={'sw' + (avatar.hairColor === i ? ' on' : '')} style={{ background: c }} onClick={() => updateAvatar({ ...avatar, hairColor: i })} />)}</Row>
             <Row label="Parte de cima">{TOPS.map((t, i) => <Chip key={i} on={avatar.top === i} onClick={() => updateAvatar({ ...avatar, top: i })}>{t.n}</Chip>)}</Row>
             <Row label="Parte de baixo">{BOTS.map((t, i) => <Chip key={i} on={avatar.bot === i} onClick={() => updateAvatar({ ...avatar, bot: i })}>{t.n}</Chip>)}</Row>
             <Row label="Boné">{['Com boné', 'Sem boné'].map((n, i) => <Chip key={i} on={avatar.cap === (i === 0)} onClick={() => updateAvatar({ ...avatar, cap: i === 0 })}>{n}</Chip>)}</Row>
-            <Row label="Barba">{['Com barba', 'Sem barba'].map((n, i) => <Chip key={i} on={avatar.beard === (i === 0)} onClick={() => updateAvatar({ ...avatar, beard: i === 0 })}>{n}</Chip>)}</Row>
+            <Row label="Óculos">{['Com óculos', 'Sem óculos'].map((n, i) => <Chip key={i} on={avatar.glasses === (i === 0)} onClick={() => updateAvatar({ ...avatar, glasses: i === 0 })}>{n}</Chip>)}</Row>
           </div>
         )}
 
