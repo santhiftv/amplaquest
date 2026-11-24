@@ -3,8 +3,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import Eagle from '@/components/Eagle';
-import Logo from '@/components/Logo';
 
 export default function Entrar() {
   const router = useRouter();
@@ -30,11 +28,9 @@ export default function Entrar() {
 
   return (
     <main className="login-page">
-      <div className="blobs"><i /><i /><i /></div>
       <form className="login-card" onSubmit={entrar}>
-        <div style={{ textAlign: 'center' }}><Eagle size={96} /></div>
         <div className="brand-c">
-          <Logo size={30} />
+          <img src="/logo.png" alt="" style={{ width: 54, height: 54, borderRadius: 13 }} />
           <b>AmplaQuest</b>
         </div>
         <h2 className="center">Bem-vindo de volta!</h2>

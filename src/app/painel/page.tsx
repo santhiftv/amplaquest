@@ -1,9 +1,10 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import SignOutButton from '@/components/SignOutButton';
-import Eagle from '@/components/Eagle';
 import Logo from '@/components/Logo';
 import StudentApp from '@/components/app/StudentApp';
+import TeacherApp from '@/components/app/TeacherApp';
+import ParentApp from '@/components/app/ParentApp';
 import type { AvatarCfg } from '@/components/app/Avatar3D';
 
 const ROLE_LABEL: Record<string, string> = {
@@ -48,7 +49,14 @@ export default async function Painel() {
     );
   }
 
-  // professor / responsável / direção — áreas completas na próxima etapa
+  if (profile.role === 'teacher') {
+    return <TeacherApp profileId={profile.id} fullName={profile.full_name} />;
+  }
+  if (profile.role === 'parent') {
+    return <ParentApp profileId={profile.id} fullName={profile.full_name} />;
+  }
+
+  // direção (admin) — painel de gestão na próxima etapa
   return (
     <main style={{ minHeight: '100vh' }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 22px', borderBottom: '1px solid var(--line)' }}>
@@ -58,7 +66,7 @@ export default async function Painel() {
       </nav>
       <div className="wrap" style={{ padding: '40px 22px', maxWidth: 720 }}>
         <div className="card center" style={{ padding: 32 }}>
-          <div style={{ display: 'flex', justifyContent: 'center' }}><Eagle size={140} /></div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}><img src="/logo.png" alt="" style={{ width: 72, height: 72, borderRadius: 16 }} /></div>
           <span className="pill" style={{ marginTop: 10 }}>{ROLE_LABEL[profile.role] ?? 'Conta'}</span>
           <h2 style={{ margin: '12px 0 4px' }}>Olá, {profile.nickname || profile.full_name}! 🦅</h2>
           <p className="muted">

@@ -1,39 +1,26 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
-import Eagle from '@/components/Eagle';
-import Logo from '@/components/Logo';
 
-const Campus3D = dynamic(() => import('@/components/Campus3D'), { ssr: false });
+const SITE = 'https://www.colegioamplacao.com.br';
+const SLIDES = [
+  `${SITE}/tim.php?src=uploads/slides/2022/02/nosso-mundo-gira-em-torno-de-educar-mentes-e-emocoes.jpg&w=2880&h=1200`,
+  `${SITE}/tim.php?src=uploads/slides/2022/02/o-que-ha-tempos-construimos-com-inovacao-na-pandemia-se-destacou-como-solucao.jpg&w=2880&h=1200`,
+  `${SITE}/tim.php?src=uploads/slides/2022/02/enquanto-os-olhares-se-voltam-para-o-novo-nos-continuaremos-enxergando-alem.jpg&w=2880&h=1200`,
+];
+const ESSENCIA = `${SITE}/uploads/pages/2026/03/colegio-amplacao-1774634417.jpg`;
 
-const SUBJECTS = [
-  { ic: '🌎', n: 'Inglês', c: '#3B82F6' },
-  { ic: '🔢', n: 'Matemática', c: '#7C3AED' },
-  { ic: '📖', n: 'Português', c: '#EC4899' },
-  { ic: '🗺️', n: 'Geografia', c: '#16A34A' },
-  { ic: '🔬', n: 'Ciências', c: '#06B6D4' },
-  { ic: '⚽', n: 'Ed. Física', c: '#F97316' },
-];
-const TEACHERS = [
-  { ic: '🌎', n: 'Prof. Helena', s: 'Inglês', c: '#3B82F6' },
-  { ic: '🔢', n: 'Prof. Rafael', s: 'Matemática', c: '#7C3AED' },
-  { ic: '📖', n: 'Profª Camila', s: 'Português', c: '#EC4899' },
-  { ic: '🗺️', n: 'Prof. Diego', s: 'Geografia', c: '#16A34A' },
-  { ic: '🔬', n: 'Profª Bianca', s: 'Ciências', c: '#06B6D4' },
-  { ic: '⚽', n: 'Prof. Tiago', s: 'Ed. Física', c: '#F97316' },
-];
-const FEATURES = [
-  { ic: '🗺️', t: 'Trilha de conteúdos', d: 'Cada ponto no mapa é uma tarefa. Você avança conforme o bimestre, em ordem cronológica.' },
-  { ic: '⚡', t: 'XP & Ofensiva', d: 'Acertou, ganhou XP. Estudou todo dia, manteve a ofensiva acesa. 🔥' },
-  { ic: '🏅', t: 'Emblemas', d: 'Terminou um conteúdo? Ganha um emblema exclusivo, estilo escoteiro — nunca repetido.' },
-  { ic: '🏆', t: 'Liga das turmas', d: 'Cada aluno soma pontos para a turma. No fim do bimestre, uma turma leva o troféu.' },
-  { ic: '🤝', t: 'Relação com o professor', d: 'Tarefas, perguntas à Mantovani e acertos constroem seu vínculo com cada professor.' },
-  { ic: '🧑‍🚀', t: 'Avatar 3D', d: 'Monte seu personagem com o uniforme do colégio — do jeitinho dos avatares clássicos.' },
+const DIFERENCIAIS = [
+  { ic: '🎯', t: 'Metodologias ativas', d: 'O aluno protagonista, posicionando-se diante de desafios reais da vida.' },
+  { ic: '🌎', t: 'Ensino bilíngue integral', d: 'Imersão no inglês ao longo de todo o dia, de forma natural e significativa.' },
+  { ic: '💜', t: 'Socioemocional', d: 'Mindfulness, empatia e resiliência como pilares da formação do ser.' },
+  { ic: '🪑', t: 'Salas 360º', d: 'Mobiliário dinâmico e adaptável, sem carteiras enfileiradas nem hierarquia.' },
+  { ic: '🏙️', t: 'Minicidade', d: 'Espaço vivencial com Mini Prefeitura para aprender cidadania na prática.' },
+  { ic: '🚀', t: 'EmpreenSER & AmplaQuest', d: 'Mentalidade empreendedora e o portal gamificado de aprendizagem.' },
 ];
 
 export default function Home() {
-  const [tour, setTour] = useState(false);
+  const [slide, setSlide] = useState(0);
 
   useEffect(() => {
     const io = new IntersectionObserver(
@@ -41,7 +28,11 @@ export default function Home() {
       { threshold: 0.12 }
     );
     document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
-    return () => io.disconnect();
+    const t = setInterval(() => setSlide((s) => (s + 1) % SLIDES.length), 5000);
+    return () => {
+      io.disconnect();
+      clearInterval(t);
+    };
   }, []);
 
   return (
@@ -50,285 +41,292 @@ export default function Home() {
       <nav className="lpnav">
         <div className="wrap nav-in">
           <Link href="/" className="brand">
-            <Logo size={34} />
-            <b>AmplaQuest</b>
+            <img src="/logo.png" alt="Colégio Amplação" />
+            <b>Colégio Amplação</b>
           </Link>
           <div className="links">
+            <a href="#essencia">A escola</a>
             <a href="#metodo">Metodologia</a>
-            <a href="#mascote">Mascote</a>
-            <a href="#historia">História</a>
-            <a href="#local">Onde fica</a>
-            <Link href="/entrar" className="btn sm">Entrar</Link>
+            <a href="#estrutura">Estrutura</a>
+            <a href="#contato">Contato</a>
+            <Link href="/entrar" className="btn verde sm">Portal do Aluno</Link>
           </div>
         </div>
       </nav>
 
       {/* HERO */}
       <header className="hero">
-        <div className="blobs"><i /><i /><i /></div>
-        <div className="wrap hero-grid">
-          <div className="reveal">
-            <span className="pill">🎓 Plataforma oficial · Colégio Amplação · Neoville</span>
-            <h1 className="h1">Aprender vira<br /><span className="grad">aventura.</span> Rumo ao Terceirão! 🦅</h1>
-            <p className="lead muted">
-              O AmplaQuest transforma o conteúdo das aulas numa jornada gamificada: cada tarefa é um
-              ponto no mapa, cada acerto vira XP, e as turmas 5ºA, 5ºB e 5ºC competem para ser as
-              campeãs do bimestre.
-            </p>
-            <div className="cta">
-              <Link href="/entrar" className="btn lg">Entrar na plataforma</Link>
-              <a href="#metodo" className="btn ghost lg">Como funciona</a>
-            </div>
-          </div>
-          <div className="reveal hero-visual">
-            <div className="screen-card">
-              <div className="screen-top"><span /><span /><span /></div>
-              <Campus3D height={320} />
-              <div className="screen-foot">
-                <span className="muted small">🏫 Campus Neoville · 6.000 m² · arraste para girar</span>
-                <button className="btn sm roxo" onClick={() => setTour(true)}>Tour 360°</button>
-              </div>
-            </div>
-            <div className="hero-eagle"><Eagle size={130} /></div>
+        {SLIDES.map((s, i) => (
+          <img key={i} src={s} alt="Colégio Amplação" referrerPolicy="no-referrer"
+            className={'hero-img' + (i === slide ? ' on' : '')} />
+        ))}
+        <div className="hero-ov" />
+        <div className="wrap hero-in reveal">
+          <span className="pill" style={{ background: 'rgba(255,255,255,.16)', color: '#fff' }}>
+            Bairro Neoville · Curitiba/PR
+          </span>
+          <h1>Uma educação que<br />forma protagonistas.</h1>
+          <p>
+            Escola bilíngue integral, referência em Curitiba na <b>Educação 360º</b> — metodologias
+            ativas, desenvolvimento socioemocional e mais de 6.000 m² pensados para inspirar.
+          </p>
+          <div className="hero-cta">
+            <a className="btn verde lg" href="#contato">Agende uma visita</a>
+            <Link className="btn lg" href="/entrar" style={{ background: 'rgba(255,255,255,.14)', backdropFilter: 'blur(4px)' }}>
+              Portal do Aluno →
+            </Link>
           </div>
         </div>
       </header>
 
-      {/* FEITO PARA O AMPLAÇÃO */}
-      <section className="wrap sec">
-        <h2 className="reveal h2 center">Feito sob medida para o Amplação</h2>
-        <p className="reveal sub center muted">
-          Não é um app genérico. Nasce da proposta <b>Educação 360º</b> do colégio — aluno
-          protagonista, metodologias ativas e desenvolvimento socioemocional — com a energia de um jogo.
-        </p>
-        <div className="grid3">
+      {/* STATS */}
+      <section className="stats-strip">
+        <div className="wrap stats-in">
           {[
-            { ic: '🎯', t: 'Aluno protagonista', d: 'O estudante conduz a própria jornada, no seu ritmo, pela trilha de conteúdos.' },
-            { ic: '🧩', t: 'Conteúdo do professor', d: 'Cada pergunta do bimestre é moldada a partir do que o professor ensina — na ordem que ele define.' },
-            { ic: '💜', t: 'Socioemocional', d: 'Ligas entre turmas, cooperação e autoconfiança: competir junto, celebrar junto.' },
-          ].map((f) => (
-            <div key={f.t} className="reveal card feat">
-              <div className="fic">{f.ic}</div>
-              <h4>{f.t}</h4>
-              <p className="muted small">{f.d}</p>
-            </div>
+            ['6.000 m²', 'de estrutura inovadora'],
+            ['~1.500', 'estudantes'],
+            ['Bilíngue', 'integral'],
+            ['Educação 360º', 'inspirada na Finlândia'],
+          ].map(([a, b]) => (
+            <div key={a} className="stat"><b>{a}</b><span>{b}</span></div>
           ))}
         </div>
       </section>
 
-      {/* METODOLOGIA / PROGRESSO */}
-      <section id="metodo" className="wrap sec">
-        <h2 className="reveal h2 center">Como funciona o progresso</h2>
-        <p className="reveal sub center muted">
-          Inspirado nas melhores escolas do mundo — a Finlândia é a grande referência do Amplação — e na
-          dinâmica viciante dos apps de idiomas.
-        </p>
-        <div className="grid3">
-          {FEATURES.map((f) => (
-            <div key={f.t} className="reveal card feat">
-              <div className="fic">{f.ic}</div>
-              <h4>{f.t}</h4>
-              <p className="muted small">{f.d}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* MATÉRIAS */}
-      <section className="wrap sec">
-        <h2 className="reveal h2 center">Matérias no ar</h2>
-        <p className="reveal sub center muted">Começando com as turmas do 5º ano e as disciplinas principais.</p>
-        <div className="reveal chips">
-          {SUBJECTS.map((s) => (
-            <div key={s.n} className="chip" style={{ borderBottomColor: s.c }}>
-              <span>{s.ic}</span>{s.n}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* PROFESSORES */}
-      <section className="wrap sec">
-        <h2 className="reveal h2 center">Nossos professores</h2>
-        <p className="reveal sub center muted">
-          Quem conduz cada matéria. <span className="small">(nomes ilustrativos — ajuste com o time real)</span>
-        </p>
-        <div className="grid3 teachers">
-          {TEACHERS.map((t) => (
-            <div key={t.n} className="reveal card tcard">
-              <div className="tav" style={{ background: t.c }}>{t.ic}</div>
-              <b>{t.n}</b>
-              <span className="muted small">{t.s}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* MASCOTE */}
-      <section id="mascote" className="wrap sec">
-        <div className="reveal mascot">
-          <div className="mascot-eagle"><Eagle size={190} /></div>
-          <div>
-            <span className="pill y">🦅 Mascote do Terceirão</span>
-            <h2 className="h2" style={{ margin: '12px 0' }}>Conheça a Mantovani</h2>
+      {/* ESSÊNCIA */}
+      <section id="essencia" className="wrap sec">
+        <div className="grid2 ac">
+          <div className="reveal">
+            <img className="photo" src={ESSENCIA} alt="Colégio Amplação" referrerPolicy="no-referrer" />
+          </div>
+          <div className="reveal">
+            <span className="pill">Nossa essência</span>
+            <h2 className="h2">Inspirar crianças por meio da educação sempre foi, para nós, algo realizador.</h2>
             <p className="muted">
-              A águia é o símbolo do <b>Terceirão</b> — o grande objetivo da jornada. A Mantovani
-              acompanha o aluno em cada pergunta, como se fosse ela quem está perguntando.
+              No Colégio Amplação, cada criança é vista como protagonista da própria história. Acreditamos
+              numa educação mais humana, colaborativa e participativa — que vai além de notas e conteúdos
+              e cultiva o ser.
             </p>
-            <p className="muted" style={{ marginTop: 10 }}>
-              Quando o aluno erra, ela explica com calma. Quando acerta, ela comemora no meio da tela,
-              com confete e cores. E a cada avanço com um professor, é ela quem traz o aviso. 🪽
+            <ul className="checklist">
+              <li>Pedagogia da escuta e respeito às individualidades</li>
+              <li>Aprendizagem significativa, dentro e fora da sala</li>
+              <li>Tecnologia a serviço do aprendizado</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* METODOLOGIA / DIFERENCIAIS */}
+      <section id="metodo" className="paper">
+        <div className="wrap sec">
+          <div className="center reveal">
+            <span className="pill">Educação 360º</span>
+            <h2 className="h2" style={{ marginTop: 10 }}>Uma educação de 1º mundo, aqui em Curitiba</h2>
+            <p className="muted sub">
+              Buscamos nas melhores referências do mundo — a Finlândia como inspiração — uma proposta que
+              desenvolve o aluno de forma completa.
             </p>
           </div>
+          <div className="grid3">
+            {DIFERENCIAIS.map((d) => (
+              <div key={d.t} className="reveal card dif">
+                <div className="dic">{d.ic}</div>
+                <h4>{d.t}</h4>
+                <p className="muted small">{d.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ESTRUTURA */}
+      <section id="estrutura" className="wrap sec">
+        <div className="grid2 ac">
+          <div className="reveal">
+            <span className="pill">Estrutura</span>
+            <h2 className="h2">Mais de 6.000 m² projetados para a inovação</h2>
+            <p className="muted">
+              Do projeto arquitetônico às salas 360º com mobiliário adaptável, cada espaço foi pensado para
+              estimular a colaboração. A Minicidade, com sua Mini Prefeitura, leva a cidadania para a
+              vivência diária dos estudantes.
+            </p>
+            <div className="hero-cta">
+              <a className="btn outline" href={SITE} target="_blank" rel="noopener">Tour virtual no site oficial</a>
+            </div>
+          </div>
+          <div className="reveal">
+            <img className="photo" src={SLIDES[1]} alt="Estrutura do Colégio Amplação" referrerPolicy="no-referrer" />
+          </div>
+        </div>
+      </section>
+
+      {/* PORTAL AMPLAQUEST */}
+      <section className="portal">
+        <div className="wrap portal-in reveal">
+          <div>
+            <span className="pill" style={{ background: 'rgba(255,255,255,.16)', color: '#fff' }}>Portal gamificado</span>
+            <h2 className="h2" style={{ color: '#fff', marginTop: 10 }}>AmplaQuest: o aprendizado vira jogo</h2>
+            <p style={{ color: 'rgba(255,255,255,.9)' }}>
+              Trilhas de conteúdo por matéria, XP a cada acerto, emblemas e a liga entre as turmas. Alunos,
+              professores e responsáveis acompanham tudo em um só lugar.
+            </p>
+          </div>
+          <Link href="/entrar" className="btn verde lg">Acessar o portal →</Link>
         </div>
       </section>
 
       {/* HISTÓRIA */}
-      <section id="historia" className="wrap sec">
-        <h2 className="reveal h2 center">A história do Amplação</h2>
-        <p className="reveal sub center muted">De uma sede enxuta na Cidade Industrial a um campus referência nacional.</p>
-        <div className="grid2">
+      <section className="wrap sec">
+        <div className="center reveal">
+          <span className="pill">Nossa história</span>
+          <h2 className="h2" style={{ marginTop: 10 }}>Transformação que fez escola</h2>
+        </div>
+        <div className="grid2 ac" style={{ marginTop: 20 }}>
           <div className="reveal timeline">
             {[
-              ['O começo', 'O Grupo Educacional Amplação nasce em Curitiba sob a direção de Gisele Mantovani Pinheiro, com uma primeira sede na região da Cidade Industrial (CIC).'],
-              ['A mudança', 'Para crescer sem perder a essência, o colégio projeta uma nova casa no bairro planejado Neoville — pensada do zero para a Educação 360º.'],
-              ['Hoje', 'Mais de 6.000 m² de inovação, salas 360º sem fileiras, Minicidade com Mini Prefeitura e capacidade para cerca de 1.500 estudantes.'],
-              ['Amanhã', 'O AmplaQuest: levar essa inovação para a tela, acompanhando cada aluno rumo ao Terceirão.'],
+              ['O início', 'Sob a direção de Gisele Mantovani Pinheiro, nasce o Grupo Educacional Amplação em Curitiba, com a pedagogia da escuta no centro de tudo.'],
+              ['O crescimento', 'A escola se consolida como referência em metodologias ativas e ensino bilíngue, ganhando reconhecimento nacional.'],
+              ['O campus de hoje', 'Mais de 6.000 m² no bairro planejado Neoville, com salas 360º e a Minicidade.'],
             ].map(([t, d]) => (
-              <div key={t} className="tl">
-                <b>{t}</b>
-                <p className="muted small">{d}</p>
-              </div>
+              <div key={t} className="tl"><b>{t}</b><p className="muted small">{d}</p></div>
             ))}
           </div>
           <div className="reveal card">
-            <h3>🏛️ A sede antiga</h3>
+            <h3>Memória e futuro</h3>
             <p className="muted small" style={{ marginTop: 8 }}>
-              A memória da primeira sede, na Cidade Industrial, faz parte da identidade do colégio — foi
-              onde a pedagogia da escuta começou a ser construída, antes do salto para o campus de Neoville.
+              Cada etapa da trajetória do Amplação faz parte da sua identidade. Este espaço está pronto para
+              receber a história completa da escola — datas, marcos e fotos que você conhece de dentro.
             </p>
-            <p className="pill" style={{ marginTop: 14 }}>💡 Espaço pronto para você completar com datas e fotos reais</p>
+            <p className="pill" style={{ marginTop: 14 }}>Santi: me envie os detalhes e as fotos que eu completo aqui.</p>
           </div>
         </div>
       </section>
 
-      {/* LOCAL */}
-      <section id="local" className="wrap sec">
-        <h2 className="reveal h2 center">Onde estamos</h2>
-        <p className="reveal sub center muted">Campus Neoville — pertinho da Cidade Industrial de Curitiba.</p>
-        <div className="reveal map">
-          <div className="map-pin">
-            <div className="float" style={{ fontSize: 46 }}>📍</div>
-            <div className="map-card">🏫 Colégio Amplação<br /><span className="muted small">Bairro Neoville · Curitiba/PR</span></div>
+      {/* CONTATO / LOCALIZAÇÃO */}
+      <section id="contato" className="paper">
+        <div className="wrap sec">
+          <div className="grid2 ac">
+            <div className="reveal">
+              <span className="pill">Fale com a gente</span>
+              <h2 className="h2">Venha conhecer o Amplação</h2>
+              <p className="muted">Agende uma visita e descubra por que tantas famílias escolhem a nossa escola.</p>
+              <div className="contact">
+                <div><span>📍 Endereço</span><b>Rua Brazílio de Araújo, 799 — Neoville, Curitiba/PR</b></div>
+                <div><span>📞 Telefone</span><b>(41) 3057-0207</b></div>
+                <div><span>💬 WhatsApp</span><b>(41) 98850-0200</b></div>
+                <div><span>✉️ E-mail</span><b>contato@colegioamplacao.com.br</b></div>
+              </div>
+              <div className="hero-cta">
+                <a className="btn verde" href="https://wa.me/5541988500200" target="_blank" rel="noopener">Falar no WhatsApp</a>
+                <a className="btn outline" href="https://www.instagram.com/colegioamplacao/" target="_blank" rel="noopener">Instagram</a>
+              </div>
+            </div>
+            <div className="reveal">
+              <a className="map" href="https://www.google.com/maps/search/Rua+Braz%C3%ADlio+de+Ara%C3%BAjo+799+Neoville+Curitiba" target="_blank" rel="noopener">
+                <div className="map-pin">📍</div>
+                <div className="map-card">Colégio Amplação<span className="muted small">Neoville · Curitiba/PR</span></div>
+                <span className="map-link">Abrir no Google Maps →</span>
+              </a>
+            </div>
           </div>
-          <a className="btn roxo" target="_blank" rel="noopener"
-            href="https://www.google.com/maps/search/Col%C3%A9gio+Amplac%C3%A3o+Neoville+Curitiba">
-            🗺️ Abrir no Google Maps
-          </a>
-        </div>
-      </section>
-
-      {/* SEGURANÇA */}
-      <section className="wrap sec">
-        <div className="reveal card" style={{ background: 'var(--roxo-bg)', borderColor: '#e3d9fb' }}>
-          <h3>🔒 Segurança e proteção de dados (LGPD)</h3>
-          <p className="muted small" style={{ margin: '6px 0 10px' }}>
-            Como a plataforma lida com dados de <b>menores de idade</b>, a privacidade é prioridade desde o projeto:
-          </p>
-          <ul className="muted small" style={{ margin: 0, paddingLeft: 18, lineHeight: 1.8 }}>
-            <li>Contas criadas pela escola — sem cadastro aberto</li>
-            <li>Logins separados por papel (aluno, professor, responsável) com permissões distintas</li>
-            <li>Responsáveis apenas <b>visualizam</b> — nunca respondem ou entregam tarefas pelo aluno</li>
-            <li>Dados protegidos por linha (RLS no Supabase) e hospedagem adequada à legislação brasileira</li>
-          </ul>
         </div>
       </section>
 
       {/* FOOTER */}
       <footer className="foot">
-        <div className="wrap">
-          <div className="pill" style={{ background: 'rgba(255,255,255,.14)', color: '#fff' }}>🔒 Protegido · LGPD</div>
-          <p style={{ marginTop: 12 }}>
-            <b>AmplaQuest</b> — plataforma de ensino gamificado criada para o <b>Colégio Amplação</b> · Neoville, Curitiba/PR
-          </p>
-          <p className="small" style={{ opacity: 0.8 }}>Dados de demonstração fictícios para avaliação das dinâmicas.</p>
+        <div className="wrap foot-in">
+          <div>
+            <div className="brand" style={{ marginBottom: 10 }}>
+              <img src="/logo.png" alt="" style={{ width: 34, height: 34, borderRadius: 8 }} />
+              <b style={{ color: '#fff', fontFamily: 'var(--display)' }}>Colégio Amplação</b>
+            </div>
+            <p className="small" style={{ color: 'rgba(255,255,255,.7)' }}>
+              Escola bilíngue integral · Educação 360º<br />Neoville, Curitiba/PR
+            </p>
+          </div>
+          <div className="foot-links">
+            <a href="#metodo">Metodologia</a>
+            <a href="#estrutura">Estrutura</a>
+            <Link href="/entrar">Portal do Aluno</Link>
+            <a href="https://www.instagram.com/colegioamplacao/" target="_blank" rel="noopener">Instagram</a>
+          </div>
+        </div>
+        <div className="wrap foot-bottom small">
+          © {new Date().getFullYear()} Colégio Amplação · AmplaQuest — plataforma de ensino gamificado · Dados de demonstração para avaliação.
         </div>
       </footer>
 
-      {/* MODAL TOUR 360 */}
-      {tour && (
-        <div className="modal" onClick={() => setTour(false)}>
-          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-            <div style={{ textAlign: 'center' }}><Eagle size={110} /></div>
-            <h3 className="center">Tour 360° do campus</h3>
-            <p className="muted small center">
-              O vídeo 360° do colégio entra aqui na versão publicada. Me manda o arquivo do tour (ou o link
-              do HuggingFace) que eu ligo o player panorâmico neste espaço.
-            </p>
-            <button className="btn block" onClick={() => setTour(false)}>Entendi</button>
-          </div>
-        </div>
-      )}
-
       <style>{`
-        .lpnav{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-        .nav-in{display:flex;align-items:center;gap:18px;padding:12px 22px}
-        .brand{display:flex;align-items:center;gap:9px}
-        .brand b{font-family:var(--display);font-size:20px;background:linear-gradient(90deg,var(--roxo),var(--verde));-webkit-background-clip:text;background-clip:text;color:transparent}
-        .links{margin-left:auto;display:flex;align-items:center;gap:22px;font-weight:700}
-        .links a{font-size:14px;color:var(--ink-soft)}
+        .lpnav{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+        .nav-in{display:flex;align-items:center;gap:18px;padding:12px 24px}
+        .brand{display:flex;align-items:center;gap:10px}
+        .brand img{width:36px;height:36px;border-radius:9px}
+        .brand b{font-family:var(--display);font-size:18px;font-weight:700}
+        .links{margin-left:auto;display:flex;align-items:center;gap:26px;font-weight:500}
+        .links a{font-size:14.5px;color:var(--ink-soft)}
         .links a:hover{color:var(--roxo)}
-        @media(max-width:780px){.links a:not(.btn){display:none}}
+        @media(max-width:820px){.links a:not(.btn){display:none}}
 
-        .hero{position:relative;overflow:hidden;padding:48px 0 64px}
-        .hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.05fr .95fr;gap:38px;align-items:center}
-        @media(max-width:860px){.hero-grid{grid-template-columns:1fr;text-align:center}}
-        .h1{font-size:50px;margin:14px 0 16px}
-        @media(max-width:860px){.h1{font-size:38px}}
-        .grad{background:linear-gradient(90deg,var(--roxo),var(--verde));-webkit-background-clip:text;background-clip:text;color:transparent}
-        .lead{font-size:18px;max-width:540px}
-        @media(max-width:860px){.lead{margin-inline:auto}}
-        .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
-        @media(max-width:860px){.cta{justify-content:center}}
-        .hero-visual{position:relative}
-        .screen-card{background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}
-        .screen-top{display:flex;gap:6px;padding:12px 14px;border-bottom:1px solid var(--line)}
-        .screen-top span{width:11px;height:11px;border-radius:50%;background:#e3ddf0}
-        .screen-top span:nth-child(1){background:#ff5f57}.screen-top span:nth-child(2){background:#febc2e}.screen-top span:nth-child(3){background:#28c840}
-        .screen-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-top:1px solid var(--line)}
-        .hero-eagle{position:absolute;right:-10px;bottom:-26px;z-index:2;filter:drop-shadow(0 12px 14px rgba(91,33,182,.25))}
+        .hero{position:relative;min-height:600px;display:flex;align-items:center;overflow:hidden;background:#2a1b4a}
+        @media(max-width:820px){.hero{min-height:520px}}
+        .hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s ease;z-index:0}
+        .hero-img.on{opacity:1}
+        .hero-ov{position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(40,20,70,.86),rgba(40,20,70,.55) 60%,rgba(22,110,74,.4))}
+        .hero-in{position:relative;z-index:2;color:#fff;padding:60px 24px}
+        .hero-in h1{font-size:54px;margin:16px 0 18px;max-width:720px}
+        @media(max-width:820px){.hero-in h1{font-size:36px}}
+        .hero-in p{font-size:18px;max-width:560px;color:rgba(255,255,255,.92)}
+        .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
 
-        .sec{padding:60px 22px}
+        .stats-strip{background:var(--roxo-esc);color:#fff}
+        .stats-in{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding:26px 24px;text-align:center}
+        @media(max-width:700px){.stats-in{grid-template-columns:repeat(2,1fr);gap:26px}}
+        .stat b{display:block;font-family:var(--display);font-size:26px;font-weight:800}
+        .stat span{font-size:13px;color:rgba(255,255,255,.75)}
+
+        .sec{padding:72px 24px}
+        .paper{background:var(--paper)}
         .h2{font-size:34px}
-        .sub{max-width:640px;margin:8px auto 34px;font-weight:600}
-        .feat .fic{font-size:34px}
-        .feat h4{margin:10px 0 6px;font-size:19px}
+        @media(max-width:820px){.h2{font-size:27px}}
+        .sub{max-width:620px;margin:10px auto 0}
+        .ac{align-items:center}
+        .photo{width:100%;height:420px;object-fit:cover;border-radius:18px;box-shadow:var(--shadow)}
+        @media(max-width:820px){.photo{height:300px}}
+        .grid3{margin-top:40px}
 
-        .chips{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
-        .chip{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-bottom:4px solid;border-radius:14px;padding:12px 16px;font-weight:800;box-shadow:var(--shadow-sm)}
-        .teachers{margin-top:4px}
-        .tcard{text-align:center}
-        .tav{width:70px;height:70px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:32px}
-        .tcard b{display:block;font-family:var(--display)}
+        .checklist{list-style:none;padding:0;margin:18px 0 0;display:flex;flex-direction:column;gap:10px}
+        .checklist li{position:relative;padding-left:30px;font-weight:500;color:var(--ink)}
+        .checklist li::before{content:'✓';position:absolute;left:0;top:-1px;width:20px;height:20px;background:var(--verde-bg);color:var(--verde);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
 
-        .mascot{display:grid;grid-template-columns:.8fr 1.2fr;gap:26px;align-items:center;background:linear-gradient(160deg,#F6F2FF,#DCFCE7);border-radius:28px;padding:40px 30px}
-        @media(max-width:860px){.mascot{grid-template-columns:1fr;text-align:center}}
-        .mascot-eagle{display:flex;justify-content:center}
+        .dif .dic{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;background:var(--roxo-bg)}
+        .dif h4{margin:14px 0 6px;font-size:18px}
 
-        .timeline{display:flex;flex-direction:column;gap:18px;border-left:3px solid var(--roxo);padding-left:20px}
+        .portal{background:linear-gradient(120deg,var(--roxo),var(--roxo-esc))}
+        .portal-in{display:flex;align-items:center;justify-content:space-between;gap:30px;padding:56px 24px;flex-wrap:wrap}
+        .portal-in>div{max-width:620px}
+
+        .timeline{display:flex;flex-direction:column;gap:20px;border-left:3px solid var(--roxo-2);padding-left:22px}
         .tl{position:relative}
-        .tl::before{content:'';position:absolute;left:-28px;top:4px;width:14px;height:14px;border-radius:50%;background:var(--roxo)}
-        .tl b{font-family:var(--display);color:var(--roxo)}
+        .tl::before{content:'';position:absolute;left:-30px;top:4px;width:14px;height:14px;border-radius:50%;background:var(--roxo)}
+        .tl b{font-family:var(--display);color:var(--roxo);font-size:16px}
 
-        .map{position:relative;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow-sm);text-align:center;padding:0 0 18px;
-          background:repeating-linear-gradient(0deg,#f3fbf5 0 24px,#eafaef 24px 25px),repeating-linear-gradient(90deg,transparent 0 60px,rgba(124,58,237,.06) 60px 61px)}
-        .map-pin{height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
-        .map-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 18px;font-weight:800;box-shadow:var(--shadow-sm)}
+        .contact{display:flex;flex-direction:column;gap:12px;margin:20px 0}
+        .contact>div{display:flex;flex-direction:column}
+        .contact span{font-size:12px;color:var(--ink-soft);font-weight:600}
+        .contact b{font-size:15px}
 
-        .foot{background:var(--roxo-esc);color:#fff;text-align:center;padding:34px 0;margin-top:20px}
+        .map{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:340px;border-radius:18px;text-align:center;
+          background:radial-gradient(circle at 50% 40%,#fff,var(--roxo-bg));border:1px solid var(--line);box-shadow:var(--shadow-sm)}
+        .map-pin{font-size:48px;animation:floaty 3s ease-in-out infinite}
+        .map-card{display:flex;flex-direction:column;font-family:var(--display);font-weight:700}
+        .map-link{font-weight:600;color:var(--roxo);font-size:14px}
 
-        .modal{position:fixed;inset:0;z-index:100;background:rgba(27,20,48,.55);display:flex;align-items:center;justify-content:center;padding:22px}
-        .modal-card{background:#fff;border-radius:22px;padding:24px;max-width:380px;width:100%;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
+        .foot{background:#140f24;color:#fff;padding:44px 0 26px}
+        .foot-in{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;padding:0 24px}
+        .foot-links{display:flex;flex-direction:column;gap:10px}
+        .foot-links a{color:rgba(255,255,255,.8);font-size:14px}
+        .foot-links a:hover{color:#fff}
+        .foot-bottom{padding:24px 24px 0;margin-top:24px;border-top:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6)}
       `}</style>
     </main>
   );
